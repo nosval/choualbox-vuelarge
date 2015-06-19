@@ -8,7 +8,7 @@ Custom Script pour récupérer la vue large sur le site http://choualbox.com sur
 * Allez ensuite sur [Choualbox](http://choualbox.com)
 * Cliquez sur la nouvelle icône "cjs" en haut à droite du navigateur
 * Cochez la case "enable cjs for this host"
-* Collez le code du fichier [javascript.js](https://github.com/nosval/choualbox-vuelarge/blob/master/javascript.js) dans la zone prévue à cet effet
+* Collez le code du fichier [javascript.js](https://raw.githubusercontent.com/nosval/choualbox-vuelarge/master/javascript.js) dans la zone prévue à cet effet
 * Cliquez sur le bouton "Save" pour enregistrer le code et recharger le site
 
 ## Comment ça marche ?
