@@ -17,6 +17,17 @@ Le développeur du site Saian a prévu dans les listes du site un bouton aperçu
 
 Ce script sert donc à automatiser cette action répétitive afin d'avoir une vue large tout en évitant une surcharge des serveurs du site et de votre bande passante.
 
+## Les plus
+
+* Ajout d'une zone de filtre pour choisir sa vue
+** S : Pas de traitement sur les aperçus
+** L : Vue large classique
+** XL : Suppression de la sidebar (évitez cette option pour continuer à afficher les sponsors et favoriser le financement du site)
+** XXL : Suppression de la sidebar. Le site est étendu sur toute la largeur de la fenêtre. (pas toujours pratique mais ça peut être amusant)
+* Ajout d'un bouton NSFW dans la zone des filtres
+* Si vous n'avez pas activé le NSFW, les box NSFW ne seront pas traitées par le script
+* Les images ne sont pas étendues sur toute la largeur de la box pour garder un belle qualité
+
 ## Optimisations
 
 Il serait simple de charger tous les aperçus d'un seul coup. Mais votre bande passante en souffrira et le serveur de choualbox surchauffera ! 

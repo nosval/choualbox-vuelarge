@@ -19,7 +19,14 @@ $(function()
      * true : afficher
      * false : cacher
      */
-    var show_button_toggle = true;
+    var show_buttons_vue = true;
+
+    /**
+     * Afficher le bouton NSFW
+     * true : afficher
+     * false : cacher
+     */
+    var show_buttons_nsfw = true;
 
 
 
@@ -27,7 +34,9 @@ $(function()
     var can_save = typeof window.openDatabase != 'undefined';
     var can_localstorage = typeof window.localStorage != 'undefined';
     var $filtres = $('.headerboucle .filtre');
-    var use_the_script = true;  
+    var vue = 'L';  
+    var button_nsfw = $('.footer a:last').clone();
+    var show_nsfw = button_nsfw.text().substr(0,8)!='Afficher';
 
     /**
      * Créer la base de données pour le cache
@@ -48,50 +57,72 @@ $(function()
     /**
      * Récupérer l'option du toggle
      */
-    if(show_button_toggle && can_localstorage)
+    if(show_buttons_vue && can_localstorage)
     {
-        var use_the_script_lv = localStorage.getItem('vuelarge_enable');
-        if(use_the_script_lv !== null)
+        var vue_lv = localStorage.getItem('type_vue');
+        if(vue_lv !== null)
         {
-            use_the_script = use_the_script_lv == 1;
+            vue = vue_lv;
         }
     }
 
     /**
      * Afficher les filtres
      */
-    if(show_button_toggle && can_localstorage)
+    if(show_buttons_nsfw || (show_buttons_vue && can_localstorage))
     {
         var $new_filtres_container = $('<div style="float:right;"></div>');
 
-        var button_toggle = $('<a style="cursor:pointer">' + (use_the_script ? 'Large' : 'Small') + '</a>');
-        button_toggle.click(function()
+        /**
+         * Vues
+         */
+        if(show_buttons_vue)
         {
-            localStorage.setItem('vuelarge_enable',use_the_script ? 0 : 1);
-            location.reload(true);
-            return false;
-        }); 
+            $new_filtres_container.append('<a style="cursor:pointer;" class="link_vue" data-vue="S">S</a>');
+            $new_filtres_container.append('<a style="cursor:pointer;" class="link_vue" data-vue="L">L</a>');
+            $new_filtres_container.append('<a style="cursor:pointer;" class="link_vue" data-vue="XL">XL</a>');
+            $new_filtres_container.append('<a style="cursor:pointer;" class="link_vue" data-vue="XXL">XXL</a>');
 
-        $new_filtres_container.append(button_toggle);
-    
+            $new_filtres_container.find('a.link_vue[data-vue=' + vue + ']').css({
+                'border-bottom' : '3px solid #F2676B',
+                'padding-bottom' : '7px'
+            });
+
+            $new_filtres_container.find('a.link_vue').click(function()
+            {
+                var type = $(this).data('vue');
+                localStorage.setItem('type_vue',type);
+                location.reload(true);
+                return false;
+            });
+        } 
+
+        /**
+         * NSFW
+         */
+        
+        button_nsfw.text('NSFW');
+        button_nsfw.addClass('link_nsfw');
+        button_nsfw.css({
+            cursor : 'pointer',
+            marginLeft : '20px'
+        });
+        if(show_nsfw)
+        {
+            button_nsfw.css({
+                    'border-bottom' : '3px solid #F2676B',
+                    'padding-bottom' : '7px'
+                });
+        }
+        $new_filtres_container.append(button_nsfw);
+
+
         $filtres.prepend($new_filtres_container);
     }
 
-    /**
-     * Lancer le script avec le scroll
-     */
-    $(window).bind('scroll',function()
-    {
-        if(!use_the_script) return;
+    
 
-        show_previews();
-    });
-
-
-    /**
-     * Lancer une première fois le script sans besoin de scroller
-     */
-    show_previews();
+    
 
 
     /**
@@ -99,8 +130,6 @@ $(function()
      */
     function show_previews()
     {
-        if(!use_the_script) return;
-
         if(tmp_to) clearTimeout(tmp_to);
 
         tmp_to = setTimeout(function()
@@ -126,6 +155,18 @@ $(function()
         var url_preview = preview_link.data('target');
         var id = preview_link.attr('id');
         var frame = box.find('.openurl-frame');
+
+
+        // Ne pas traiter si NSFW
+        if(!show_nsfw)
+        {
+            if(box.find('.nsfwbadge').length==1)
+            {
+                // Afficher une autre box visible
+                show_previews();
+                return;
+            }
+        }
 
         // Afficher la frame avec le message du chargement
         frame.show();
@@ -165,8 +206,7 @@ $(function()
      * Modifier le code HTML et l'afficher dans la frame
      */
     function set_preview_box(box,frame,html)
-    {
-        
+    {        
         var $html = null;
 
         /**
@@ -183,6 +223,7 @@ $(function()
             video.attr('poster',thumbnail_url);
             video.removeAttr('autoplay');
             video.attr('preload','none');
+            video.css('maxWidth',620);
         }
         /**
          * Si Youtube :
@@ -192,6 +233,18 @@ $(function()
         {
             html = html.replace('autoplay=1','autoplay=0');
             $html = $(html);
+        }
+        /**
+         * Si Image :
+         * - Définir le width auto pour éviter de déformer les images
+         */
+        else if(/<img /.exec(html)!==null)
+        {
+            $html = $('<div>' + html + '</div>');
+            $html.find('img').css({
+                width : 'auto',
+                maxWidth : '100%'
+            });
         }
         else
         {
@@ -248,5 +301,52 @@ $(function()
             callback(false);
         }
     }
+
+
+    /*===============================================
+    =            INIT VUES LARGES LAYOUT            =
+    ===============================================*/
+    if(vue == 'XL' || vue == 'XXL')
+    {
+        var container = $('.container.contenu');
+        container.find('> .row > .col-xs-9').css('width','100%').css('background-color','#fff');
+        container.find('> .row > .col-xs-3').remove();
+        container.find('.boxheader').width(container.width());
+    }
+    if(vue == 'XXL')
+    {
+        $('head').append('<style type="text/css">.largeursite{width:95% !important;}</style>');
+    }
+    
+    
+    
+
+
+    /*========================================
+    =         INIT VUES LARGES Event         =
+    ========================================*/
+    /**
+     * Annuler le reste du script si vue small
+     */
+    if(vue == 'S') return;
+
+
+    /**
+     * Lancer le script avec le scroll
+     */
+     $(window).bind('scroll',function()
+    {
+        if(vue != 'S') return;
+
+        show_previews();
+    });
+
+    /**
+     * Lancer une première fois le script sans besoin de scroller
+     */
+    show_previews();
+    
+    
+    
 
 });
