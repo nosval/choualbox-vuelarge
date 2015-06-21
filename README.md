@@ -1,6 +1,9 @@
+Ce script n'est désormais plus d'actualité. Si vous l'avez déjà installé, merci de le retirer pour récupérer les fonctionnalités de base de Saian.
+
+
 # Rendez nous la vue large sur Choualbox !
 
-Custom Script pour récupérer la vue large sur le site http://choualbox.com sur Chrome.
+Custom Script pour récupérer la vue large sur le site http://choualbox.com.
 
 ## Installation (Chrome)
 
